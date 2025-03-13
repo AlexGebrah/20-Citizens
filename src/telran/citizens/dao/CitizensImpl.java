@@ -32,14 +32,20 @@ public class CitizensImpl implements Citizens {
         }
         idCollection.add(person);
 
-        List<Person> lastNameList = (List<Person>) lastNameCollection;
-        List<Person> ageList = (List<Person>) ageCollection;
+        List<Person> lastNameList = new ArrayList<>(lastNameCollection);
+        List<Person> ageList = new ArrayList<>(ageCollection);
 
-        int indexLastName = Math.abs(Collections.binarySearch(lastNameList, person, comparatorLastName) + 1);
+        int indexLastName = Collections.binarySearch(lastNameList, person, comparatorLastName);
+        indexLastName = indexLastName >= 0 ? indexLastName : -indexLastName - 1;
         lastNameList.add(indexLastName, person);
 
-        int indexAge = Math.abs(Collections.binarySearch(ageList, person, comparatorAge) + 1);
+        int indexAge = Collections.binarySearch(ageList, person, comparatorAge);
+        indexAge = indexAge >= 0 ? indexAge : -indexAge - 1;
         ageList.add(indexAge, person);
+
+        lastNameCollection = lastNameList;
+        ageCollection = ageList;
+
         return true;
     }
 
@@ -83,31 +89,51 @@ public class CitizensImpl implements Citizens {
     @Override
     public Iterable<Person> find(String lastName) {
         List<Person> result = new ArrayList<>();
-        for (Person p : lastNameCollection) {
-            if (p.getLastName().equals(lastName)) {
-                result.add(p);
-            }
+//        for (Person p : lastNameCollection) {
+//            if (p.getLastName().equals(lastName)) {
+//                result.add(p);
+//            }
+//        }
+        List<Person> lastNameList = new ArrayList<>(lastNameCollection);
+        int index = Collections.binarySearch(lastNameList, new Person(0, "", lastName, null), comparatorLastName);
+        if (index < 0) {
+            return new ArrayList<>();
         }
-        return result.isEmpty() ? null : result;
+        result.add(lastNameList.get(index));
+
+        int left = index - 1;
+        while (left >= 0 && lastNameList.get(left).getLastName().equalsIgnoreCase(lastName)) {
+            result.add(0, lastNameList.get(left));
+            left--;
+        }
+
+        int right = index + 1;
+        while (right < lastNameList.size() && lastNameList.get(right).getLastName().equalsIgnoreCase(lastName)) {
+            result.add(lastNameList.get(right));
+            right++;
+        }
+
+        return result;
     }
+
 
     //O(n*log(n))
     @Override
     public Iterable<Person> getAllPersonSortedById() {
-        return new ArrayList<>(idCollection);
+        return idCollection;
     }
 
     //O(n*log(n))
     @Override
     public Iterable<Person> getAllPersonSortedByAge() {
-        return new ArrayList<>(ageCollection);
+        return ageCollection;
     }
 
     //O(n*log(n))
     @Override
     public Iterable<Person> getAllPersonSortedByLastNAme() {
 
-        return new ArrayList<>(lastNameCollection);
+        return lastNameCollection;
     }
 
     //О(1)
