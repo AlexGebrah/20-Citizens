@@ -2,7 +2,7 @@ package telran.citizens.dao;
 
 import telran.citizens.model.Person;
 
-public interface Citizens extends Iterable<Person> {
+public interface Citizens  {
     boolean add (Person person);
 
     boolean remove (int id);

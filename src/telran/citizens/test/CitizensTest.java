@@ -88,16 +88,4 @@ public class CitizensTest {
         assertEquals(2, citizens.size());
     }
 
-    @Test
-    void testIterator() {
-        Iterator<Person> iterator = citizens.iterator();
-        assertNotNull(iterator);
-        assertTrue(iterator.hasNext());
-        assertEquals(person1, iterator.next());
-        assertTrue(iterator.hasNext());
-        assertEquals(person2, iterator.next());
-        assertTrue(iterator.hasNext());
-        assertEquals(person3, iterator.next());
-        assertFalse(iterator.hasNext());
-    }
 }

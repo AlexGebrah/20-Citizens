@@ -6,15 +6,22 @@ import java.util.*;
 
 public class CitizensImpl implements Citizens {
     Collection<Person> idCollection;
+    Collection<Person> lastNameCollection;
+    Collection<Person> ageCollection;
     Comparator<Person> comparatorAge = (p1, p2) ->    p2.getAge() - p1.getAge();
     Comparator<Person> comparatorLastName = (Person p1, Person p2) -> p1.getLastName().compareToIgnoreCase(p2.getLastName());
 
     public CitizensImpl() {
         this.idCollection = new ArrayList<>();
+        this.lastNameCollection = new ArrayList<>();
+        this.ageCollection = new ArrayList<>();
     }
+
 
     public CitizensImpl(List<Person> citizens) {
         this.idCollection = new ArrayList<>(citizens);
+        this.lastNameCollection = new ArrayList<>(citizens);
+        this.ageCollection = new ArrayList<>(citizens);
     }
 
     //O(n)
@@ -24,6 +31,15 @@ public class CitizensImpl implements Citizens {
             return false;
         }
         idCollection.add(person);
+
+        List<Person> lastNameList = (List<Person>) lastNameCollection;
+        List<Person> ageList = (List<Person>) ageCollection;
+
+        int indexLastName = Math.abs(Collections.binarySearch(lastNameList, person, comparatorLastName) + 1);
+        lastNameList.add(indexLastName, person);
+
+        int indexAge = Math.abs(Collections.binarySearch(ageList, person, comparatorAge) + 1);
+        ageList.add(indexAge, person);
         return true;
     }
 
@@ -32,10 +48,13 @@ public class CitizensImpl implements Citizens {
     public boolean remove(int id) {
         Person person = find(id);
         if (person != null) {
+            lastNameCollection.remove(person);
+            ageCollection.remove(person);
             return idCollection.remove(person);
         }
         return false;
     }
+
 
     //O(n)
     @Override
@@ -52,7 +71,7 @@ public class CitizensImpl implements Citizens {
     @Override
     public Iterable<Person> find(int minAge, int maxAge) {
         List<Person> result = new ArrayList<>();
-        for (Person p : idCollection) {
+        for (Person p : ageCollection) {
             if (p.getAge() >= minAge && p.getAge() <= maxAge) {
                 result.add(p);
             }
@@ -64,7 +83,7 @@ public class CitizensImpl implements Citizens {
     @Override
     public Iterable<Person> find(String lastName) {
         List<Person> result = new ArrayList<>();
-        for (Person p : idCollection) {
+        for (Person p : lastNameCollection) {
             if (p.getLastName().equals(lastName)) {
                 result.add(p);
             }
@@ -75,25 +94,20 @@ public class CitizensImpl implements Citizens {
     //O(n*log(n))
     @Override
     public Iterable<Person> getAllPersonSortedById() {
-        List<Person> personList = new ArrayList<>(idCollection);
-        personList.sort((p1, p2) -> p1.compareTo(p2));
-        return personList;
+        return new ArrayList<>(idCollection);
     }
 
     //O(n*log(n))
     @Override
     public Iterable<Person> getAllPersonSortedByAge() {
-        List<Person> personList = new ArrayList<>(idCollection);
-        personList.sort(comparatorAge);
-        return personList;
+        return new ArrayList<>(ageCollection);
     }
 
     //O(n*log(n))
     @Override
     public Iterable<Person> getAllPersonSortedByLastNAme() {
-        List<Person> personList = new ArrayList<>(idCollection);
-        personList.sort(comparatorLastName);
-        return personList;
+
+        return new ArrayList<>(lastNameCollection);
     }
 
     //О(1)
@@ -102,9 +116,4 @@ public class CitizensImpl implements Citizens {
         return idCollection.size();
     }
 
-    @Override
-    public Iterator<Person> iterator() {
-        return idCollection.iterator();
     }
-
-}
