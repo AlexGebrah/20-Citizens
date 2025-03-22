@@ -5,15 +5,19 @@ import telran.citizens.model.Person;
 import java.time.LocalDate;
 import java.util.*;
 
-import static java.util.Collections.addAll;
-
 public class CitizensImpl implements Citizens {
     TreeSet<Person> idCollection;
     TreeSet<Person> lastNameCollection;
     TreeSet<Person> ageCollection;
-    Comparator<Person> comparatorId = (p1, p2) -> p2.getId() - p1.getId();
-    Comparator<Person> comparatorAge = (p1, p2) ->    p2.getAge() - p1.getAge();
-    Comparator<Person> comparatorLastName = (Person p1, Person p2) -> p1.getLastName().compareToIgnoreCase(p2.getLastName());
+    Comparator<Person> comparatorId = (p1, p2) -> p1.getId() - p2.getId();
+    Comparator<Person> comparatorAge = (p1, p2) ->    {
+       int res = Integer.compare(p1.getAge(), p2.getAge());
+        return res != 0 ? res : Integer.compare(p1.getId(), p2.getId());
+    };
+    Comparator<Person> comparatorLastName = (Person p1, Person p2) -> {
+        int res = p1.getLastName().compareToIgnoreCase(p2.getLastName());
+        return res != 0 ? res : Integer.compare(p1.getId(), p2.getId());
+    };
 
     public CitizensImpl() {
         this.idCollection = new TreeSet<>(comparatorId);
@@ -58,46 +62,50 @@ public class CitizensImpl implements Citizens {
     @Override
     public Person find(int id) {
         Person searchPerson = new Person(id, "", "", null);
-        TreeSet<Person> res = (TreeSet<Person>) idCollection.subSet(searchPerson, true, searchPerson, true);
-        return res.isEmpty() ? null : res.first();
+        Person res = idCollection.ceiling(searchPerson);
+        return (res!= null && res.getId() == id) ? res : null;
     }
 
     // O(log(n))
     @Override
     public Iterable<Person> find(int minAge, int maxAge) {
-        Person minPerson = new Person(0, "", "", LocalDate.now().minusYears(maxAge));
-        Person maxPerson = new Person(0, "", "", LocalDate.now().minusYears(minAge));
-
-        TreeSet<Person> res = (TreeSet<Person>) ageCollection.subSet(minPerson, true, maxPerson, true);
-        return res.isEmpty() ? Collections.emptyList() : res;
+        LocalDate now = LocalDate.now();
+        Person minPerson = new Person(Integer.MIN_VALUE, "", "", now.minusYears(minAge));
+        Person maxPerson = new Person(Integer.MAX_VALUE, "", "", now.minusYears(maxAge));
+        return ageCollection.subSet(minPerson, true, maxPerson, true);
     }
 
     //O(log(n))
     @Override
     public Iterable<Person> find(String lastName) {
         Person searchPerson = new Person(0, "", lastName, null);
-        TreeSet<Person> res = (TreeSet<Person>) lastNameCollection.subSet(searchPerson, true, searchPerson, true);
-        return res.isEmpty() ? Collections.emptyList() : res;
+        NavigableSet<Person> tail = lastNameCollection.tailSet(searchPerson, true);
+        List<Person> result = new ArrayList<>();
+        for (Person person : tail) {
+            if (!person.getLastName().equalsIgnoreCase(lastName)) {
+                break;
+            }
+            result.add(person);
+        }
+        return result.isEmpty() ? Collections.emptyList() : result;
     }
-
 
     //O(n*log(n))
     @Override
     public Iterable<Person> getAllPersonSortedById() {
-        return idCollection;
+        return new ArrayList<>(idCollection);
     }
 
     //O(n*log(n))
     @Override
     public Iterable<Person> getAllPersonSortedByAge() {
-        return ageCollection;
+        return new ArrayList<>(ageCollection);
     }
 
     //O(n*log(n))
     @Override
     public Iterable<Person> getAllPersonSortedByLastNAme() {
-
-        return lastNameCollection;
+        return new ArrayList<>(lastNameCollection);
     }
 
     //О(1)
@@ -106,4 +114,4 @@ public class CitizensImpl implements Citizens {
         return idCollection.size();
     }
 
-    }
+}

@@ -7,7 +7,7 @@ import telran.citizens.dao.CitizensImpl;
 import telran.citizens.model.Person;
 
 import java.time.LocalDate;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -51,8 +51,13 @@ public class CitizensTest {
 
     @Test
     void testFindAge () {
-        List<Person> result = (List<Person>) citizens.find(30, 40);
+        List<Person> result = new ArrayList<>();
+        for (Person person : citizens.find(30, 40)) {
+            result.add(person);
+        }
         assertEquals(2, result.size());
+        assertTrue(result.contains(person1));
+        assertTrue(result.contains(person2));
     }
 
     @Test
@@ -72,7 +77,7 @@ public class CitizensTest {
     @Test
     void testGetAllPersonSortedByAge() {
         List<Person> result = (List<Person>) citizens.getAllPersonSortedByAge();
-        assertEquals(List.of(person2, person1, person3), result);
+        assertEquals(List.of(person3, person1, person2), result);
     }
 
     @Test
