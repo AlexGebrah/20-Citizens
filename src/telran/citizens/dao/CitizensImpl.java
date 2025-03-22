@@ -2,54 +2,46 @@ package telran.citizens.dao;
 
 import telran.citizens.model.Person;
 
+import java.time.LocalDate;
 import java.util.*;
 
+import static java.util.Collections.addAll;
+
 public class CitizensImpl implements Citizens {
-    Collection<Person> idCollection;
-    Collection<Person> lastNameCollection;
-    Collection<Person> ageCollection;
+    TreeSet<Person> idCollection;
+    TreeSet<Person> lastNameCollection;
+    TreeSet<Person> ageCollection;
+    Comparator<Person> comparatorId = (p1, p2) -> p2.getId() - p1.getId();
     Comparator<Person> comparatorAge = (p1, p2) ->    p2.getAge() - p1.getAge();
     Comparator<Person> comparatorLastName = (Person p1, Person p2) -> p1.getLastName().compareToIgnoreCase(p2.getLastName());
 
     public CitizensImpl() {
-        this.idCollection = new ArrayList<>();
-        this.lastNameCollection = new ArrayList<>();
-        this.ageCollection = new ArrayList<>();
+        this.idCollection = new TreeSet<>(comparatorId);
+        this.lastNameCollection = new TreeSet<>(comparatorLastName);
+        this.ageCollection = new TreeSet<>(comparatorAge);
     }
 
 
     public CitizensImpl(List<Person> citizens) {
-        this.idCollection = new ArrayList<>(citizens);
-        this.lastNameCollection = new ArrayList<>(citizens);
-        this.ageCollection = new ArrayList<>(citizens);
+        this();
+        idCollection.addAll(citizens);
+        lastNameCollection.addAll(citizens);
+        ageCollection.addAll(citizens);
     }
 
-    //O(n)
+    //O(log(n))
     @Override
     public boolean add(Person person) {
-        if (find(person.getId()) != null) {
+        if (!idCollection.add(person)) {
             return false;
         }
         idCollection.add(person);
-
-        List<Person> lastNameList = new ArrayList<>(lastNameCollection);
-        List<Person> ageList = new ArrayList<>(ageCollection);
-
-        int indexLastName = Collections.binarySearch(lastNameList, person, comparatorLastName);
-        indexLastName = indexLastName >= 0 ? indexLastName : -indexLastName - 1;
-        lastNameList.add(indexLastName, person);
-
-        int indexAge = Collections.binarySearch(ageList, person, comparatorAge);
-        indexAge = indexAge >= 0 ? indexAge : -indexAge - 1;
-        ageList.add(indexAge, person);
-
-        lastNameCollection = lastNameList;
-        ageCollection = ageList;
-
+        lastNameCollection.add(person);
+        ageCollection.add(person);
         return true;
     }
 
-    // O(n)
+    // O(log(n))
     @Override
     public boolean remove(int id) {
         Person person = find(id);
@@ -62,58 +54,30 @@ public class CitizensImpl implements Citizens {
     }
 
 
-    //O(n)
+    //O(log(n))
     @Override
     public Person find(int id) {
-        for (Person p : idCollection) {
-            if (p.getId() == id) {
-                return p;
-            }
-        }
-        return null;
+        Person searchPerson = new Person(id, "", "", null);
+        TreeSet<Person> res = (TreeSet<Person>) idCollection.subSet(searchPerson, true, searchPerson, true);
+        return res.isEmpty() ? null : res.first();
     }
 
-    // O(n)
+    // O(log(n))
     @Override
     public Iterable<Person> find(int minAge, int maxAge) {
-        List<Person> result = new ArrayList<>();
-        for (Person p : ageCollection) {
-            if (p.getAge() >= minAge && p.getAge() <= maxAge) {
-                result.add(p);
-            }
-        }
-       return result.isEmpty() ? null : result;
+        Person minPerson = new Person(0, "", "", LocalDate.now().minusYears(maxAge));
+        Person maxPerson = new Person(0, "", "", LocalDate.now().minusYears(minAge));
+
+        TreeSet<Person> res = (TreeSet<Person>) ageCollection.subSet(minPerson, true, maxPerson, true);
+        return res.isEmpty() ? Collections.emptyList() : res;
     }
 
-    //O(n)
+    //O(log(n))
     @Override
     public Iterable<Person> find(String lastName) {
-        List<Person> result = new ArrayList<>();
-//        for (Person p : lastNameCollection) {
-//            if (p.getLastName().equals(lastName)) {
-//                result.add(p);
-//            }
-//        }
-        List<Person> lastNameList = new ArrayList<>(lastNameCollection);
-        int index = Collections.binarySearch(lastNameList, new Person(0, "", lastName, null), comparatorLastName);
-        if (index < 0) {
-            return new ArrayList<>();
-        }
-        result.add(lastNameList.get(index));
-
-        int left = index - 1;
-        while (left >= 0 && lastNameList.get(left).getLastName().equalsIgnoreCase(lastName)) {
-            result.add(0, lastNameList.get(left));
-            left--;
-        }
-
-        int right = index + 1;
-        while (right < lastNameList.size() && lastNameList.get(right).getLastName().equalsIgnoreCase(lastName)) {
-            result.add(lastNameList.get(right));
-            right++;
-        }
-
-        return result;
+        Person searchPerson = new Person(0, "", lastName, null);
+        TreeSet<Person> res = (TreeSet<Person>) lastNameCollection.subSet(searchPerson, true, searchPerson, true);
+        return res.isEmpty() ? Collections.emptyList() : res;
     }
 
 

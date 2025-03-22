@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
-public class Person implements Comparable<Person> {
+public class Person {
     private final int id;
     private String firstName;
     private String lastName;
@@ -53,12 +53,7 @@ public class Person implements Comparable<Person> {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
-    }
-
-    @Override
-    public int compareTo(Person o) {
-        return Integer.compare(id, o.id);
+        return Objects.hash(id);
     }
 
     @Override
