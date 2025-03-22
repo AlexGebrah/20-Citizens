@@ -57,7 +57,6 @@ public class CitizensImpl implements Citizens {
         return false;
     }
 
-
     //O(log(n))
     @Override
     public Person find(int id) {
