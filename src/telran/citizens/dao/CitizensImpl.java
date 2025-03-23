@@ -62,7 +62,7 @@ public class CitizensImpl implements Citizens {
     public Person find(int id) {
         Person searchPerson = new Person(id, "", "", null);
         Person res = idCollection.ceiling(searchPerson);
-        return (res!= null && res.getId() == id) ? res : null;
+        return res!= null && res.getId() == id ? res : null;
     }
 
     // O(log(n))
@@ -77,8 +77,8 @@ public class CitizensImpl implements Citizens {
     //O(log(n))
     @Override
     public Iterable<Person> find(String lastName) {
-        Person searchPerson = new Person(0, "", lastName, null);
-        NavigableSet<Person> tail = lastNameCollection.tailSet(searchPerson, true);
+        Person search = new Person(0, "", lastName, null);
+        NavigableSet<Person> tail = lastNameCollection.tailSet(search, true);
         List<Person> result = new ArrayList<>();
         for (Person person : tail) {
             if (!person.getLastName().equalsIgnoreCase(lastName)) {
