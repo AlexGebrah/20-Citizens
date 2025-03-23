@@ -92,19 +92,19 @@ public class CitizensImpl implements Citizens {
     //O(n*log(n))
     @Override
     public Iterable<Person> getAllPersonSortedById() {
-        return new ArrayList<>(idCollection);
+        return idCollection;
     }
 
     //O(n*log(n))
     @Override
     public Iterable<Person> getAllPersonSortedByAge() {
-        return new ArrayList<>(ageCollection);
+        return ageCollection;
     }
 
     //O(n*log(n))
     @Override
     public Iterable<Person> getAllPersonSortedByLastNAme() {
-        return new ArrayList<>(lastNameCollection);
+        return lastNameCollection;
     }
 
     //О(1)

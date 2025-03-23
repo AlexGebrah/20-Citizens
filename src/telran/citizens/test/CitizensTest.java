@@ -70,19 +70,22 @@ public class CitizensTest {
 
     @Test
     void testGetAllPersonSortedById() {
-        List<Person> result = (List<Person>) citizens.getAllPersonSortedById();
+        List<Person> result = new ArrayList<>();
+        citizens.getAllPersonSortedById().forEach(s -> result.add(s));
         assertEquals(List.of(person1, person2, person3), result);
     }
 
     @Test
     void testGetAllPersonSortedByAge() {
-        List<Person> result = (List<Person>) citizens.getAllPersonSortedByAge();
+        List<Person> result = new ArrayList<>();
+        citizens.getAllPersonSortedByAge().forEach(s -> result.add(s));
         assertEquals(List.of(person3, person1, person2), result);
     }
 
     @Test
     void testGetAllPersonSortedByLastNAme() {
-        List<Person> result = (List<Person>) citizens.getAllPersonSortedByLastNAme();
+        List<Person> result = new ArrayList<>();
+        citizens.getAllPersonSortedByLastNAme().forEach(s -> result.add(s));
         assertEquals(List.of(person1, person3, person2), result);
     }
 
