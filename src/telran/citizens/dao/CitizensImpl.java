@@ -77,9 +77,9 @@ public class CitizensImpl implements Citizens {
     //O(log(n))
     @Override
     public Iterable<Person> find(String lastName) {
-        Person search = new Person(Integer.MIN_VALUE, "", lastName, null);
-        NavigableSet<Person> tail = lastNameCollection.tailSet(search, true);
-        return tail;
+        Person searchMIN = new Person(Integer.MIN_VALUE, "", lastName, null);
+        Person searchMAX = new Person(Integer.MAX_VALUE, "", "", null);
+        return lastNameCollection.subSet(searchMIN,false, searchMAX, false );
     }
 
     //O(1)
