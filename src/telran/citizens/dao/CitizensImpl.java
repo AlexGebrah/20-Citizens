@@ -78,7 +78,7 @@ public class CitizensImpl implements Citizens {
     @Override
     public Iterable<Person> find(String lastName) {
         Person searchMIN = new Person(Integer.MIN_VALUE, "", lastName, null);
-        Person searchMAX = new Person(Integer.MAX_VALUE, "", "", null);
+        Person searchMAX = new Person(Integer.MAX_VALUE, "", lastName, null);
         return lastNameCollection.subSet(searchMIN,false, searchMAX, false );
     }
 
