@@ -89,19 +89,19 @@ public class CitizensImpl implements Citizens {
         return result.isEmpty() ? Collections.emptyList() : result;
     }
 
-    //O(n*log(n))
+    //O(1)
     @Override
     public Iterable<Person> getAllPersonSortedById() {
         return idCollection;
     }
 
-    //O(n*log(n))
+    //O(1)
     @Override
     public Iterable<Person> getAllPersonSortedByAge() {
         return ageCollection;
     }
 
-    //O(n*log(n))
+    //O(1)
     @Override
     public Iterable<Person> getAllPersonSortedByLastNAme() {
         return lastNameCollection;
